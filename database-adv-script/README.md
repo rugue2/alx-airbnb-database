@@ -135,7 +135,7 @@ This directory contains SQL queries that demonstrate **aggregations** and **wind
 ### 1. Aggregation with GROUP BY
 
 ```sql
-SELECT
+SELECT 
     u.id AS user_id,
     u.first_name,
     u.last_name,
@@ -152,14 +152,14 @@ Uses `COUNT` with `GROUP BY`.
 
 ---
 
-### 2. Window Function (Ranking)
+### 2. Window Function (Row Number Ranking)
 
 ```sql
-SELECT
+SELECT 
     p.id AS property_id,
     p.title,
     COUNT(b.id) AS total_bookings,
-    RANK() OVER (ORDER BY COUNT(b.id) DESC) AS booking_rank
+    ROW_NUMBER() OVER (ORDER BY COUNT(b.id) DESC) AS booking_rank
 FROM Property p
 LEFT JOIN Booking b
     ON p.id = b.property_id
@@ -167,8 +167,8 @@ GROUP BY p.id, p.title
 ORDER BY booking_rank;
 ```
 
-➡️ Ranks properties by **total number of bookings**.
-Properties with the same number of bookings share the same rank (due to `RANK()`).
+➡️ Ranks properties by **total number of bookings** using `ROW_NUMBER()`.
+Each property gets a unique rank, even if multiple properties have the same number of bookings.
 
 ---
 

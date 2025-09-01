@@ -62,3 +62,62 @@ FULL OUTER JOIN Booking b
    * A booking exists without a user.
    * A property exists without reviews.
    * A user exists without bookings.
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+# SQL Subqueries – Airbnb Database
+
+This directory contains examples of subqueries (correlated and non-correlated) using the Airbnb clone database.
+
+## Queries Included
+
+### 1. Non-Correlated Subquery
+
+```sql
+SELECT *
+FROM Property
+WHERE id IN (
+    SELECT property_id
+    FROM Review
+    GROUP BY property_id
+    HAVING AVG(rating) > 4.0
+)
+ORDER BY id;
+```
+
+➡️ Finds all **properties** where the **average rating > 4.0**.
+The inner subquery computes average ratings for each property.
+The outer query retrieves only the properties that match.
+
+---
+
+### 2. Correlated Subquery
+
+```sql
+SELECT *
+FROM "User" u
+WHERE (
+    SELECT COUNT(*)
+    FROM Booking b
+    WHERE b.user_id = u.id
+) > 3
+ORDER BY u.id;
+```
+
+➡️ Finds all **users** who have made **more than 3 bookings**.
+The inner query depends on each row from the outer query (`u.id`).
+This makes it a **correlated subquery**.
+
+---
+
+## Usage
+
+1. Ensure schema and sample data are loaded.
+2. Run the queries in `subqueries.sql`.
+3. Verify results by checking:
+
+   * Properties with average rating > 4.0.
+   * Users with more than 3 bookings.
+

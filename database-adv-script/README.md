@@ -128,6 +128,7 @@ This makes it a **correlated subquery**.
 
 # 2 Aggregations & Window Functions – Airbnb Database
 
+
 This directory contains SQL queries that demonstrate **aggregations** and **window functions**.
 
 ## Queries Included
@@ -152,14 +153,33 @@ Uses `COUNT` with `GROUP BY`.
 
 ---
 
-### 2. Window Function (Row Number Ranking)
+### 2a. Window Function (ROW\_NUMBER)
 
 ```sql
 SELECT 
     p.id AS property_id,
     p.title,
     COUNT(b.id) AS total_bookings,
-    ROW_NUMBER() OVER (ORDER BY COUNT(b.id) DESC) AS booking_rank
+    ROW_NUMBER() OVER (ORDER BY COUNT(b.id) DESC) AS booking_row_number
+FROM Property p
+LEFT JOIN Booking b
+    ON p.id = b.property_id
+GROUP BY p.id, p.title
+ORDER BY booking_row_number;
+```
+
+➡️ Uses `ROW_NUMBER()` to assign a **unique rank** to each property. Even if two properties have the same booking count, they will receive different row numbers.
+
+---
+
+### 2b. Window Function (RANK)
+
+```sql
+SELECT 
+    p.id AS property_id,
+    p.title,
+    COUNT(b.id) AS total_bookings,
+    RANK() OVER (ORDER BY COUNT(b.id) DESC) AS booking_rank
 FROM Property p
 LEFT JOIN Booking b
     ON p.id = b.property_id
@@ -167,8 +187,14 @@ GROUP BY p.id, p.title
 ORDER BY booking_rank;
 ```
 
-➡️ Ranks properties by **total number of bookings** using `ROW_NUMBER()`.
-Each property gets a unique rank, even if multiple properties have the same number of bookings.
+➡️ Uses `RANK()` to assign ranks to properties. Properties with the same booking count share the same rank (ties allowed).
+
+---
+
+## Key Difference Between ROW\_NUMBER and RANK
+
+* **ROW\_NUMBER()** → Always gives a unique sequential number, even if counts are tied.
+* **RANK()** → Assigns the same rank for ties, leaving gaps in the sequence.
 
 ---
 
@@ -179,4 +205,4 @@ Each property gets a unique rank, even if multiple properties have the same numb
 3. Verify results by checking:
 
    * Users with many bookings vs. users with none.
-   * Property ranking order based on bookings.
+   * Property ranking order using both `ROW_NUMBER()` and `RANK()`.

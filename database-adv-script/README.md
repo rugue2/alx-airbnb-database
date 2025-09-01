@@ -67,7 +67,7 @@ FULL OUTER JOIN Booking b
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
-# SQL Subqueries – Airbnb Database
+# 1 SQL Subqueries – Airbnb Database
 
 This directory contains examples of subqueries (correlated and non-correlated) using the Airbnb clone database.
 
@@ -121,3 +121,62 @@ This makes it a **correlated subquery**.
    * Properties with average rating > 4.0.
    * Users with more than 3 bookings.
 
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+# 2 Aggregations & Window Functions – Airbnb Database
+
+This directory contains SQL queries that demonstrate **aggregations** and **window functions**.
+
+## Queries Included
+
+### 1. Aggregation with GROUP BY
+
+```sql
+SELECT
+    u.id AS user_id,
+    u.first_name,
+    u.last_name,
+    COUNT(b.id) AS total_bookings
+FROM "User" u
+LEFT JOIN Booking b
+    ON u.id = b.user_id
+GROUP BY u.id, u.first_name, u.last_name
+ORDER BY total_bookings DESC;
+```
+
+➡️ Retrieves each user along with the **total number of bookings** they made.
+Uses `COUNT` with `GROUP BY`.
+
+---
+
+### 2. Window Function (Ranking)
+
+```sql
+SELECT
+    p.id AS property_id,
+    p.title,
+    COUNT(b.id) AS total_bookings,
+    RANK() OVER (ORDER BY COUNT(b.id) DESC) AS booking_rank
+FROM Property p
+LEFT JOIN Booking b
+    ON p.id = b.property_id
+GROUP BY p.id, p.title
+ORDER BY booking_rank;
+```
+
+➡️ Ranks properties by **total number of bookings**.
+Properties with the same number of bookings share the same rank (due to `RANK()`).
+
+---
+
+## Usage
+
+1. Ensure your schema and seed data are loaded.
+2. Run the queries in `aggregations_and_window_functions.sql`.
+3. Verify results by checking:
+
+   * Users with many bookings vs. users with none.
+   * Property ranking order based on bookings.
